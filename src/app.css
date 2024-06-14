@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+h1,
+h2,
+h3,
+h4,
+a,
+p,
+li {
+  color: #decff1;
+  font-family: "VT323", monospace;
+  font-weight: normal;
+}
+
+/* global style attributes*/
+:global(html) {
+  background-color: theme(colors.gray.200);
+}

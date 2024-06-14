@@ -1,0 +1,25 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="48"
+  height="48"
+  viewBox="0 0 48 48"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <g fill="none" stroke="gray" stroke-width="2">
+    <!-- Rounded border of the matrix -->
+    <rect x="5" y="5" width="38" height="38" rx="8" ry="8"></rect>
+    <!-- Vertical lines of the matrix -->
+    <path d="M19,5 Q20,24 19,43" stroke-linecap="round"></path>
+    <path d="M29,5 Q30,24 29,43" stroke-linecap="round"></path>
+    <!-- Horizontal lines of the matrix -->
+    <path d="M5,19 Q24,20 43,19" stroke-linecap="round"></path>
+    <path d="M5,29 Q24,30 43,29" stroke-linecap="round"></path>
+    <!-- "X" mark in the center cell with curves -->
+    <path d="M15,15 Q24,26 33,15" stroke-linecap="round"></path>
+    <path d="M15,33 Q24,22 33,33" stroke-linecap="round"></path>
+  </g>
+</svg>
