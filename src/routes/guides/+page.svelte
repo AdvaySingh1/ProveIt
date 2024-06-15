@@ -6,7 +6,7 @@
     import { page } from "$app/stores";
   let guides; // Assuming Guide is a TypeScript type that describes the shape of items in your guides array
   $: guides = $page.data.props.guides;
-  console.log(guides);
+  //console.log(guides); this will render in the browser because it's client side
 </script>
 
 {#if guides}
