@@ -6,6 +6,7 @@
 <h1 class="text-3xl font-bold underline text-stone-950">
   Welcome to ProveIt
 </h1>
+<a href="/guides"><button class="text-3xl font-bold underline text-stone-950">Guides</button></a>
 </div>
 
 
