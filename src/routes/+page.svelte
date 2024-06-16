@@ -21,9 +21,6 @@ let unsubAuth =  onAuthStateChanged(auth, (user) => {
     // ...
   }
 });
-onMount(() =>{
-  console.log(regForm);
-})
 
 onDestroy(() => {
   unsubAuth();

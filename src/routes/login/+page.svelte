@@ -1,113 +1,75 @@
-<!-- 
-
- <script context="module">
-    import { initializeApp } from "firebase/app";
-
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  addDoc,
-  deleteDoc,
-  doc,
-  
-} from "firebase/firestore";
-
-    export async function dataInit(){
-        try{
-            const firebaseConfig = {
-    apiKey: "AIzaSyAzEiz-_IZBznyAhR4Ztotvixa9LJ1NIP0",
-    authDomain: "proveit-492e4.firebaseapp.com",
-    projectId: "proveit-492e4",
-    storageBucket: "proveit-492e4.appspot.com",
-    messagingSenderId: "940720500143",
-    appId: "1:940720500143:web:0eba22a9eecb4f003bd35a",
-  };
-
-  // Initialize Firebase
-  initializeApp(firebaseConfig);
-  console.log("hello");
-    const db = getFirestore();
-    const proofCol = collection(db, "proofs");
-
-    getDocs(proofCol)
-      .then((snapshot) => {
-        // console.log(snapshot.docs)
-        /**
-         * @type {any[] | PromiseLike<any[]>}
-         */
-        let proofs = [];
-        snapshot.docs.forEach((doc) => {
-          proofs.push({ ...doc.data(), id: doc.id });
-        });
-        console.log(proofs);
-        return {
-            props:{
-                proofs,
-            } 
-        }
-      })
-      .catch((err) => {
-        console.log(err.message);
-        return(err);
-      });
-        }
-        catch (err) {
-            console.log(err);
-            return (err);
-        }
-    }
-    
-</script>  -->
-
 <script lang="ts">
-       import { initializeApp } from "firebase/app";
-
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  addDoc,
-  deleteDoc,
-  doc,
-  
-} from "firebase/firestore";
-let proofs: Array<any> = [];
+  import { auth } from "$lib/database/fb-config";
+  import {
+  getAuth,
+  signInWithEmailAndPassword, signOut,
+  onAuthStateChanged
+  } from 'firebase/auth'
 
 
-        try{
-            const firebaseConfig = {
-    apiKey: "AIzaSyAzEiz-_IZBznyAhR4Ztotvixa9LJ1NIP0",
-    authDomain: "proveit-492e4.firebaseapp.com",
-    projectId: "proveit-492e4",
-    storageBucket: "proveit-492e4.appspot.com",
-    messagingSenderId: "940720500143",
-    appId: "1:940720500143:web:0eba22a9eecb4f003bd35a",
-  };
 
-  // Initialize Firebase
-  initializeApp(firebaseConfig);
-  console.log("hello");
-    const db = getFirestore();
-    const proofCol = collection(db, "proofs");
+let email: string = '';
+let password: string = '';
+let cred: any = ''
 
-    getDocs(proofCol)
-      .then((snapshot) => {
-        proofs = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-        }
-        catch (err) {
-            console.log(err);
-        }
-    
+const handleLogin = async () => {
+  try{
+    cred = await signInWithEmailAndPassword(auth, email, password);
+    console.log(cred);
+    email = '';
+    password = '';
+  }
+  catch (e) {
+    alert('user not found.');
+  }
+}
+
+const handleLogout = async () => {
+  try {  
+    await signOut(auth);
+    console.log('signed out');
+  }
+  catch (e: any) {
+    alert (e.message);
+  }
+}
 </script>
 
-<h1 class="text-black">
-     {#each proofs as proof (proof.id)}
-        <h1>{`${proof.Author} has written a proof about ${proof.Subject} at ${proof.Created}`}</h1>
-    {:else}
-        <h1>There are no proofs as of now</h1>
-    {/each} </h1>
+<form on:submit|preventDefault={handleLogin} class="relative p-8 rounded-lg w-8/12 h-4/6 mx-auto my-10 flex flex-col justify-between items-center bg-white shadow-lg">
+    <div class="w-full mb-4"> 
+        <label for="email" class="block text-sm font-bold mb-2">Email</label>
+        <input 
+            bind:value={email}
+            type="email" 
+            placeholder="example@math.com"
+            class="border-2 border-black w-full p-2 rounded-md text-gray-700 focus:ring-blue-500 focus:border-blue-500"
+            id="email"
+        >
+    </div>
+    <div class="w-full mb-8">
+        <label for="password" class="block text-sm font-bold mb-2">Password</label>
+        <input 
+            bind:value={password}
+            type="password"
+            class="border-2 border-black w-full p-2 rounded-md text-gray-700 focus:ring-blue-500 focus:border-blue-500"
+            id="password"
+        >
+    </div>
+    <button 
+        type="submit"
+        class="w-1/2 p-2 bg-blue-700 text-white font-bold rounded-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
+    >
+        Submit
+    </button>
+</form>
+
+
+<form on:submit|preventDefault={handleLogout} class="relative p-8 rounded-lg w-8/12 h-4/6 mx-auto my-10 flex flex-col justify-between items-center bg-white shadow-lg">
+    
+    <button 
+        type="submit"
+        class="w-1/2 p-2 bg-blue-700 text-white font-bold rounded-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
+    >
+        Sign out
+    </button>
+</form>
