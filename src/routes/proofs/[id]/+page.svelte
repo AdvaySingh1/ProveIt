@@ -2,7 +2,7 @@
 
     // TODO: consider making server side fetching for effeciency
 import { onDestroy } from "svelte";
-   import db from "$lib/database/fb-config";
+   import { db } from "$lib/database/fb-config";
   import { doc, onSnapshot } from 'firebase/firestore';
   import { page } from "$app/stores";
     // Real time subscription 

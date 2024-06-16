@@ -31,7 +31,7 @@
   <button
     type="button" 
     class="absolute top-2 right-2 inline-flex items-center justify-center w-8 h-8 bg-red-600 text-white rounded-full hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" 
-    on:click={closeForm}
+    on:click|preventDefault={closeForm}
   >
     &#10005; <!-- This is a unicode "X" character -->
   </button>

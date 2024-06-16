@@ -1,5 +1,5 @@
 import type { RequestHandler } from "@sveltejs/kit";
-import db from "$lib/database/fb-config";
+import { db } from "$lib/database/fb-config";
 import { initializeApp } from "firebase/app";
 import {
   getFirestore,

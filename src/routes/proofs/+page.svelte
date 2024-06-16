@@ -5,8 +5,9 @@
   import EditFrom from "./editFrom.svelte";
   import AddForm from "./addForm.svelte";
   import { onDestroy } from "svelte";
-   import db from "$lib/database/fb-config";
-  import { collection, query, onSnapshot } from 'firebase/firestore';
+  import { db } from "$lib/database/fb-config";
+  import { collection, query, onSnapshot, where, orderBy, Query } from 'firebase/firestore';
+  import SearchBar from "$lib/components/searchBar.svelte";
   let proofs: any;
   $: proofs = $page.data.props.proofs;
 
@@ -14,6 +15,7 @@
   let showEditForm: boolean = false;
   let showAddForm: boolean = false;
   let proofToEdit: object = {};
+  let unsubdb: any;
 
 
   async function addProof(e: any) {
@@ -56,15 +58,37 @@
 
 // Real time subscription 
   const proofsCollection = collection(db, 'proofs');
-  const q = query(proofsCollection);
+  let search: any;
+  let q: Query = query(proofsCollection, orderBy("Created"));
+  // $: {
+  //   search? q = query(
+  //   proofsCollection,
+  //   where("Author", "<=", search),
+  //   where("Author", ">=", search),
+  //   //where(search, "in", "Subject"),
+  //   orderBy("Created")
+  // ) : q = query(proofsCollection, orderBy("Created"));
+  // }
+
 
   // Setting up reactive statement for Firestore subscription
-  $: unsubscribe = onSnapshot(q, (snapshot) => {
+  $: {
+    unsubdb = onSnapshot(q, (snapshot) => {
     proofs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+    search ?
+    proofs = proofs.filter((doc: any) =>
+  doc.Author.toLowerCase().includes(search.toLowerCase())
+) : proofs ;
   });
 
+}
+
+
+
+
     onDestroy(() => {
-      if (unsubscribe) unsubscribe();
+      if (unsubdb) unsubdb();
   });
 
 
@@ -73,9 +97,11 @@
 
 <button class="absolute my-3 rounded-full size-10 right-3 bg-blue-600 text-white" on:click={() => {showAddForm = !showAddForm;}}>+</button>
 
+<SearchBar on:searchVal={(e) => search = e.detail}/>
   {#if proofs.length > 0}
    <ul class=" my-20 relative">
      {#each proofs as proof (proof.id)}
+     <!-- TODO: add preloading data on hoever (server side for [id]) -->
       <li class="relative top-1 my-10 bg-blue-100">
         <a href={`/proofs/${proof.id}`}>
           <h1>{proof.Author}</h1>
@@ -90,6 +116,8 @@
     {/each} 
     </ul>
 {/if}
+
+<!-- TODO add img/text when there are no proofs related to topic or person -->
 
 
 
