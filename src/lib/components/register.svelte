@@ -1,12 +1,23 @@
 <script lang="ts">
     import { db, auth } from "$lib/database/fb-config";
-  import { createEventDispatcher } from "svelte";
+    import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    onAuthStateChanged
+    } from 'firebase/auth'
+    import { createEventDispatcher } from "svelte";
     export let regForm : Boolean = false;
     let dispatch = createEventDispatcher();
 
 
-    let email: String;
-    let password: String;
+    let email: string;
+    let password: string;
+
+    const handleRegister = async () => {
+        let cred = await createUserWithEmailAndPassword(auth, email, password);
+        console.log(cred);
+        email = ''; password = '';
+    }
 </script>
 
 
@@ -15,13 +26,33 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
 {#if regForm}
 <div class="backdrop" on:click|self={() => {regForm = !regForm; dispatch("formClose");}} >
-    <form class="p-2.5 rounded-lg w-8/12 h-4/6 mx-auto my-10 text-center bg-opacity-100 flex justify-center items-center bg-white">
-        <label for="email">Email</label>
-        <input bind:value={email} type="text" placeholder="example@math.com" class="border-black">
-        <label for="password">password</label>
-        <input bind:value={password} type="text" class="border-black">
-        <button class="absolute bottom-1 justify-center bg-blue-700 text-white"></button>
-    </form>
+    <form on:submit|preventDefault={handleRegister} class="relative p-8 rounded-lg w-8/12 h-4/6 mx-auto my-10 flex flex-col justify-between items-center bg-white shadow-lg">
+    <div class="w-full mb-4"> 
+        <label for="email" class="block text-sm font-bold mb-2">Email</label>
+        <input 
+            bind:value={email}
+            type="email" 
+            placeholder="example@math.com"
+            class="border-2 border-black w-full p-2 rounded-md text-gray-700 focus:ring-blue-500 focus:border-blue-500"
+            id="email"
+        >
+    </div>
+    <div class="w-full mb-8">
+        <label for="password" class="block text-sm font-bold mb-2">Password</label>
+        <input 
+            bind:value={password}
+            type="password"
+            class="border-2 border-black w-full p-2 rounded-md text-gray-700 focus:ring-blue-500 focus:border-blue-500"
+            id="password"
+        >
+    </div>
+    <button 
+        type="submit"
+        class="w-1/2 p-2 bg-blue-700 text-white font-bold rounded-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
+    >
+        Submit
+    </button>
+</form>
 </div>
 {/if}
 

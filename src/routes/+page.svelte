@@ -39,12 +39,14 @@ onDestroy(() => {
 <Register regForm={regForm} on:formClose={() => {regForm = !regForm;}}/>
 
 
-<div class="title">
+  <div >
+    <div class="title" class:invisible={regForm}>
 <h1 class="text-3xl font-bold underline text-stone-950">
   Welcome {uid? uid: ''} to ProveIt
 </h1>
 <a href="/guides"><button class="text-3xl font-bold underline text-stone-950">Guides</button></a>
 </div>
+  </div>
 
 
 <style lang="postcss">

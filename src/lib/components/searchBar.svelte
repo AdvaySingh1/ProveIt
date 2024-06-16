@@ -6,7 +6,6 @@
     let search: String = "";
 
     const searchVal = () => {
-        console.log(search);
         dispatch("searchVal", search);
     }
 
