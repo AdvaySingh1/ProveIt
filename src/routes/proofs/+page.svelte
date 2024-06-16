@@ -3,19 +3,22 @@
   import time from "$lib/functions/time";
   import { page } from "$app/stores";
   import EditFrom from "./editFrom.svelte";
+  import AddForm from "./addForm.svelte";
   import { onDestroy } from "svelte";
    import db from "$lib/database/fb-config";
   import { collection, query, onSnapshot } from 'firebase/firestore';
   let proofs: any;
   $: proofs = $page.data.props.proofs;
 
-  let title = '';
-  let subject = '';
+
   let showEditForm: boolean = false;
+  let showAddForm: boolean = false;
   let proofToEdit: object = {};
 
-  async function submitProof() {
-    const proof = { Author: title, Subject: subject, Created: Date.now()
+
+  async function addProof(e: any) {
+    showAddForm = !showAddForm
+    const proof = { Author: e.detail.name, Subject: e.detail.subject, Created: Date.now()
  };
     
       const response = await fetch('/proofs', {
@@ -29,13 +32,6 @@
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
-      // const result = await response.json();
-      // console.log('Proof added:', result);
-      
-      // Clear the form fields after successful submission
-      title = '';
-      subject = '';
     }
   async function deleteProof(id: string) {
     const response = await fetch(`/proofs/${id}`, {
@@ -68,51 +64,45 @@
   });
 
     onDestroy(() => {
-    unsubscribe();
+      if (unsubscribe) unsubscribe();
   });
 
 
 
 </script>
 
-<p>
-  {#if proofs}
+<button class="absolute my-3 rounded-full size-10 right-3 bg-blue-600 text-white" on:click={() => {showAddForm = !showAddForm;}}>+</button>
+
+  {#if proofs.length > 0}
+   <ul class=" my-20 relative">
      {#each proofs as proof (proof.id)}
-     <ul class="bg-blue-200">
-      <li class="relative my-10">
-        <h1>{proof.Author}</h1>
-        <p>Proof about {proof.Subject} was created at {time(proof.Created)}</p>.
-        <button on:click={() => deleteProof(proof.id)} class="relative right-0 top-0">Delete</button>
-        <button on:click={() => handleEdit(proof)} class="relative right-0 bottom-0">Edit</button>
+      <li class="relative top-1 my-10 bg-blue-100">
+        <a href={`/proofs/${proof.id}`}>
+          <h1>{proof.Author}</h1>
+          <p>Proof about {proof.Subject} was created at {time(proof.Created)}</p>.
+          <button on:click={() => deleteProof(proof.id)} class="relative right-0 top-0">Delete</button>
+          <button on:click={() => handleEdit(proof)} class="relative right-0 bottom-0">Edit</button>
+        </a>
+    
       </li>
-     </ul>
     {:else}
         <h1>There are no proofs as of now</h1>
     {/each} 
+    </ul>
 {/if}
-</p>
 
 
 
-<form on:submit|preventDefault={submitProof}>
-  <input 
-    type="text" 
-    bind:value={title} 
-    placeholder="Title" 
-  />
-  <input 
-    type="text" 
-    bind:value={subject} 
-    placeholder="Subject" 
-  />
-  <button type="submit" class="bg-slate-600">Submit Proof</button>
-</form>
+
 
 
 {#if showEditForm}
   <EditFrom proof={proofToEdit} on:handleEdit={editProof} on:handleClose={() => handleEdit(proofToEdit)}/>
 {/if}
 
+{#if showAddForm}
+  <AddForm on:addEvent={addProof} on:closeFrom={() => {showAddForm = !showAddForm}}/>
+{/if}
 
 
     
