@@ -55,18 +55,23 @@ export const POST = async ({ request }) => {
   });
 };
 
-// export const post: RequestHandler<Locals, Data> = async ({
-//   addDoc(proofCol, {
-//     Author: 'addBookForm.title.value',
-//     Subject: 'addBookForm.author.value',
-//     created: serverTimestamp(),
-//   });
-// };
-
 // export const PUT: RequestHandler = async ({ request }) => {
 //   // Your code to handle PUT request
 // };
 
-// export const DELETE: RequestHandler = async ({ request }) => {
+// export const DELETE = async ({ request, params }) => {
 //   // Your code to handle DELETE request
-// };
+//   const id = params.id; // or get it from the request body if passed there
+
+//     // Create a reference to the document to be deleted
+//     const proofDocRef = doc(db, 'proofs', id);
+
+//     // Perform the deletion in the database
+//     await deleteDoc(proofDocRef);
+//     return new Response(JSON.stringify({ message: 'Proof deleted successfully' }), {
+//       status: 200,
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     });
+//   };
