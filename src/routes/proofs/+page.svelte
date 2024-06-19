@@ -4,18 +4,26 @@
   import { page } from "$app/stores";
   import EditFrom from "./editFrom.svelte";
   import AddForm from "./addForm.svelte";
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { db, auth } from "$lib/database/fb-config";
   import { collection, query, onSnapshot, where, orderBy, Query, doc } from 'firebase/firestore';
   import SearchBar from "$lib/components/searchBar.svelte";
+  import ProofCard from "./proofCard.svelte";
 
   // initially render people and proofs on server side
   $: proofs = $page.data.props.proofs;
 
 
   $: ppl = $page.data.props.ppl;
+  let user: any;// = ppl?.filter((person: any) => person.uid === auth.currentUser?.uid)[0];;
 
-
+  const findUser = async () => {
+    user = await ppl?.filter((person: any) => person.uid === auth.currentUser?.uid)[0];
+    // console.log(user);
+  }
+  onMount( () => {
+    findUser();
+  })
 
 
   let showEditForm: boolean = false;
@@ -26,10 +34,12 @@
 
   async function addProof(e: any) {
     //const creator = doc(db, `people/${auth.currentUser?.uid}`);
+    console.log(user);
     showAddForm = !showAddForm
     // TODO add file
-    const proof = { Author: auth.currentUser?.uid, Name: e.detail.name, Subject: e.detail.subject, Description: e.detail.description, Created: time(Date.now()),
- };
+    const proof = { Author: user?.Name, Name: e.detail.name, Subject: e.detail.subject, 
+                  Description: e.detail.description, Created: time(Date.now()), Id: auth.currentUser?.uid
+                  };
     
       const response = await fetch('/proofs', {
         method: 'POST',
@@ -49,7 +59,7 @@
       });
   }
 
-  function handleEdit(proof: object){
+  function handleEdit(proof: any){
     showEditForm = !showEditForm;
     proofToEdit = proof;
     }
@@ -84,11 +94,6 @@
 
 }
 
-  // console.log(auth.currentUser?.uid);
-
-
-
-
     onDestroy(() => {
       if (unsubdb) unsubdb();
   });
@@ -97,32 +102,20 @@
 
 </script>
 
+
+{#if user}
 <button class="absolute my-3 rounded-full size-10 right-3 bg-blue-600 text-white" on:click={() => {showAddForm = !showAddForm;}}>+</button>
+{/if}
+
 
 <SearchBar on:searchVal={(e) => search = e.detail}/>
   {#if proofs.length > 0}
    <ul class=" my-20 relative">
      {#each proofs as proof (proof.id)}
      <!-- TODO: add preloading data on hoever (server side for [id]) -->
-      <li class="relative top-1 my-10 bg-blue-100">
-        <a href={`/proofs/${proof.id}`}>
-          <h1>{proof.Name}</h1>
-          <p>Subject: {proof.Subject} {proof.Created}<br> {proof.Description}.</p>
-          {#if proof.Subject == "Hair"}
-            <!-- {console.log(proof.Author)} -->
-            <!-- {console.log(ppl.uid)} -->
-          {/if}
-          <p>
-            {ppl.filter((person) => person.uid === proof.Author)[0].Name}
-          </p>
 
-          <button on:click={() => deleteProof(proof.id)} class="relative right-0 top-0">Delete</button>
-          {#if auth.currentUser?.uid === proof.Author}
-          <button on:click={() => handleEdit(proof)} class="relative right-0 bottom-0">Edit</button>
-          {/if}
-        </a>
-    
-      </li>
+    <ProofCard proof={proof} on:deleteProof={() => deleteProof(proof.id)} on:handleEdit={() => handleEdit(proof)}/>
+
     {:else}
         <h1>There are no proofs as of now</h1>
     {/each} 
@@ -130,8 +123,6 @@
 {/if}
 
 <!-- TODO add img/text when there are no proofs related to topic or person -->
-
-
 
 
 
