@@ -5,11 +5,17 @@
   import EditFrom from "./editFrom.svelte";
   import AddForm from "./addForm.svelte";
   import { onDestroy } from "svelte";
-  import { db } from "$lib/database/fb-config";
-  import { collection, query, onSnapshot, where, orderBy, Query } from 'firebase/firestore';
+  import { db, auth } from "$lib/database/fb-config";
+  import { collection, query, onSnapshot, where, orderBy, Query, doc } from 'firebase/firestore';
   import SearchBar from "$lib/components/searchBar.svelte";
-  let proofs: any;
+
+  // initially render people and proofs on server side
   $: proofs = $page.data.props.proofs;
+
+
+  $: ppl = $page.data.props.ppl;
+
+
 
 
   let showEditForm: boolean = false;
@@ -19,8 +25,10 @@
 
 
   async function addProof(e: any) {
+    //const creator = doc(db, `people/${auth.currentUser?.uid}`);
     showAddForm = !showAddForm
-    const proof = { Author: e.detail.name, Subject: e.detail.subject, Created: Date.now()
+    // TODO add file
+    const proof = { Author: auth.currentUser?.uid, Name: e.detail.name, Subject: e.detail.subject, Description: e.detail.description, Created: time(Date.now()),
  };
     
       const response = await fetch('/proofs', {
@@ -60,15 +68,7 @@
   const proofsCollection = collection(db, 'proofs');
   let search: any;
   let q: Query = query(proofsCollection, orderBy("Created"));
-  // $: {
-  //   search? q = query(
-  //   proofsCollection,
-  //   where("Author", "<=", search),
-  //   where("Author", ">=", search),
-  //   //where(search, "in", "Subject"),
-  //   orderBy("Created")
-  // ) : q = query(proofsCollection, orderBy("Created"));
-  // }
+
 
 
   // Setting up reactive statement for Firestore subscription
@@ -83,6 +83,8 @@
   });
 
 }
+
+  // console.log(auth.currentUser?.uid);
 
 
 
@@ -104,10 +106,20 @@
      <!-- TODO: add preloading data on hoever (server side for [id]) -->
       <li class="relative top-1 my-10 bg-blue-100">
         <a href={`/proofs/${proof.id}`}>
-          <h1>{proof.Author}</h1>
-          <p>Proof about {proof.Subject} was created at {time(proof.Created)}</p>.
+          <h1>{proof.Name}</h1>
+          <p>Subject: {proof.Subject} {proof.Created}<br> {proof.Description}.</p>
+          {#if proof.Subject == "Hair"}
+            <!-- {console.log(proof.Author)} -->
+            <!-- {console.log(ppl.uid)} -->
+          {/if}
+          <p>
+            {ppl.filter((person) => person.uid === proof.Author)[0].Name}
+          </p>
+
           <button on:click={() => deleteProof(proof.id)} class="relative right-0 top-0">Delete</button>
+          {#if auth.currentUser?.uid === proof.Author}
           <button on:click={() => handleEdit(proof)} class="relative right-0 bottom-0">Edit</button>
+          {/if}
         </a>
     
       </li>
