@@ -8,6 +8,7 @@
   let showReg: Boolean = false;
   let regForm: Boolean = false;
 
+
 let unsubAuth =  onAuthStateChanged(auth, (user) => {
   if (user) {
     // User is signed in, see docs for a list of available properties
@@ -58,5 +59,3 @@ onDestroy(() => {
     top: 200px;
   }
 </style>
-
-
