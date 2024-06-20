@@ -37,7 +37,7 @@
     console.log(user);
     showAddForm = !showAddForm
     // TODO add file
-    const proof = { Author: user?.Name, Name: e.detail.name, Subject: e.detail.subject, 
+    const proof = { Author: user.Name, Name: e.detail.name, Subject: e.detail.subject, 
                   Description: e.detail.description, Created: time(Date.now()), Id: auth.currentUser?.uid
                   };
     
